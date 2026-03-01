@@ -462,29 +462,6 @@
         </button>
     </div>
 
-    <!-- Speaker Notes & Presenter Controls -->
-    <div id="default-controls-wrapper"
-        class="fixed bottom-6 left-6 z-50 flex items-center gap-4 transition-transform duration-300">
-        <!-- The Controls Container -->
-        <div id="default-controls" class="flex gap-4 transition-opacity duration-300">
-            <button id="notes-toggle"
-                class="px-4 py-2 rounded-full bg-white/90 hover:bg-slate-100 text-slate-600 border border-slate-300 backdrop-blur-sm transition-colors flex items-center gap-2 text-sm font-medium">
-                <i data-lucide="file-text" class="w-4 h-4"></i> Speaker Notes
-            </button>
-            <button id="open-presenter"
-                class="px-4 py-2 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 backdrop-blur-sm transition-colors flex items-center gap-2 text-sm font-medium shadow-sm">
-                <i data-lucide="monitor-up" class="w-4 h-4"></i> Presenter View
-            </button>
-        </div>
-
-        <!-- The Hide/Show Button -->
-        <button id="toggle-controls-visibility"
-            class="p-2 rounded-full bg-white/50 hover:bg-white text-slate-400 hover:text-slate-700 backdrop-blur-sm transition-all opacity-50 hover:opacity-100"
-            title="Hide/Show Controls">
-            <i data-lucide="eye-off" id="visibility-icon" class="w-4 h-4"></i>
-        </button>
-    </div>
-
     <!-- Speaker Notes Panel -->
     <div id="speaker-notes"
         class="fixed bottom-0 left-0 w-full glass-panel border-t border-slate-200 p-6 z-40 max-h-[40vh] overflow-y-auto">
@@ -554,15 +531,10 @@
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         const currentNoteEl = document.getElementById('current-note');
-        const notesToggle = document.getElementById('notes-toggle');
-        const openPresenterBtn = document.getElementById('open-presenter');
         const closeNotes = document.getElementById('close-notes');
         const speakerNotesPanel = document.getElementById('speaker-notes');
-        const defaultControlsWrapper = document.getElementById('default-controls-wrapper');
-        const defaultControls = document.getElementById('default-controls');
-        const toggleControlsVisibilityBtn = document.getElementById('toggle-controls-visibility');
-        const visibilityIcon = document.getElementById('visibility-icon');
         const presentationContainerInner = document.getElementById('presentation');
+        const presenterTrigger = document.getElementById('presenter-trigger'); // Renamed from secretPresenterTrigger
 
         // Presenter View Elements
         const presenterLayout = document.getElementById('presenter-layout');
@@ -579,8 +551,8 @@
         if (isPresenterView) {
             presentationContainerInner.classList.add('hidden');
             document.querySelector('.fixed.bottom-6.right-6').classList.add('hidden'); // Hide main nav
-            defaultControls.classList.add('hidden');
-            progressBar.parentElement.classList.add('hidden');
+            // Removed: defaultControls.classList.add('hidden');
+            // Removed: progressBar.parentElement.classList.add('hidden'); // This was already commented out in the original, but if it was meant to be removed, it's gone now.
             presenterLayout.classList.remove('hidden');
             presenterLayout.classList.add('flex');
             presenterTotalSlidesEl.textContent = slides.length;
@@ -693,34 +665,17 @@
             if (touchendX > touchstartX + 50) prev();
         }
 
-        // Speaker Notes Toggle
-        notesToggle.addEventListener('click', () => {
-            speakerNotesPanel.classList.toggle('open');
-        });
+        // Speaker Notes Toggle (Removed for clean presentation screen)
         closeNotes.addEventListener('click', () => {
             speakerNotesPanel.classList.remove('open');
         });
 
-        // Open Presenter View Window
-        openPresenterBtn.addEventListener('click', () => {
-            window.open(window.location.pathname + '?presenter=true', 'travelhawk_presenter', 'width=1000,height=700,menubar=no,toolbar=no,status=no');
-        });
-
-        // Toggle Controls Visibility
-        let controlsVisible = true;
-        toggleControlsVisibilityBtn.addEventListener('click', () => {
-            controlsVisible = !controlsVisible;
-            if (controlsVisible) {
-                defaultControls.classList.remove('opacity-0', 'pointer-events-none');
-                visibilityIcon.setAttribute('data-lucide', 'eye-off');
-                toggleControlsVisibilityBtn.classList.remove('bg-white/10');
-            } else {
-                defaultControls.classList.add('opacity-0', 'pointer-events-none');
-                visibilityIcon.setAttribute('data-lucide', 'eye');
-                toggleControlsVisibilityBtn.classList.add('bg-white/10');
-            }
-            lucide.createIcons(); // Re-render the icon
-        });
+        // Open Presenter View via secret trigger
+        if (secretPresenterTrigger) {
+            secretPresenterTrigger.addEventListener('click', () => {
+                window.open(window.location.pathname + '?presenter=true', 'travelhawk_presenter', 'width=1000,height=700,menubar=no,toolbar=no,status=no');
+            });
+        }
 
         // Presenter View Controls
         presenterNextBtn.addEventListener('click', next);
