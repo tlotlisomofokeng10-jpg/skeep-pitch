@@ -6,6 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TravelHawk Pitch Deck</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: {
+                        'md': { 'raw': '(min-width: 768px), print' },
+                        'lg': { 'raw': '(min-width: 1024px), print' }
+                    }
+                }
+            }
+        }
+    </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap"
@@ -67,13 +79,78 @@
         #speaker-notes.open {
             transform: translateY(0);
         }
+
+        /* PDF Export Styles */
+        @media print {
+            @page {
+                size: landscape;
+                margin: 0;
+            }
+
+            body {
+                overflow: visible !important;
+                background-color: white !important;
+                height: auto !important;
+            }
+
+            #presentation {
+                display: block !important;
+                position: static !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+
+            .slide {
+                position: relative !important;
+                display: flex !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                opacity: 1 !important;
+                transform: none !important;
+                visibility: visible !important;
+                height: 100vh !important;
+                max-height: 100vh !important;
+                width: 100vw !important;
+                overflow: hidden !important;
+            }
+
+            .slide+.slide {
+                page-break-before: always !important;
+                break-before: page !important;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .glass-panel {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background-color: #ffffff !important;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+                border: 1px solid #e2e8f0 !important;
+            }
+
+            /* Hide UI elements while printing */
+            #main-nav-controls,
+            #pdf-download-btn,
+            #progress-bar-container,
+            #speaker-notes,
+            #presenter-layout,
+            .fixed {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 
 <body class="w-screen h-screen relative selection:bg-sky-500/30">
 
     <!-- Progress Bar -->
-    <div class="absolute top-0 left-0 w-full h-1.5 bg-white z-50">
+    <div id="progress-bar-container" class="absolute top-0 left-0 w-full h-1.5 bg-white z-50">
         <div id="progress-bar"
             class="h-full bg-gradient-to-r from-[#002845] to-[#A12328] transition-all duration-300 w-0"></div>
     </div>
@@ -453,7 +530,7 @@
     </div>
 
     <!-- Navigation Controls -->
-    <div class="fixed bottom-6 right-6 z-50 flex gap-2">
+    <div id="main-nav-controls" class="fixed bottom-6 right-6 z-50 flex gap-2 print:hidden">
         <button id="prev-btn"
             class="p-3 rounded-full bg-white/90 hover:bg-slate-100 text-slate-900 border border-slate-300 backdrop-blur-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
             <i data-lucide="chevron-left" class="w-6 h-6"></i>
@@ -463,6 +540,13 @@
             <i data-lucide="chevron-right" class="w-6 h-6"></i>
         </button>
     </div>
+
+    <!-- Download PDF Button -->
+    <button id="pdf-download-btn" onclick="window.print()"
+        class="fixed bottom-6 left-6 z-50 p-3 rounded-full bg-white/50 hover:bg-white text-slate-500 hover:text-slate-800 border border-slate-300 backdrop-blur-sm transition-colors print:hidden shadow-sm"
+        title="Download as PDF">
+        <i data-lucide="download" class="w-5 h-5"></i>
+    </button>
 
     <!-- Speaker Notes Panel -->
     <div id="speaker-notes"
@@ -562,25 +646,25 @@
 
         // The Pitch Script mapped to slides
         const scripts = [
-            "Title Slide: Get ready. Smile, make eye contact, and prepare to start the hook.",
+            "Title Slide: Get ready. Deep breath, smile, make eye contact.",
 
-            "Picture this: You've finally taken your family on that dream vacation. You're driving your family through a vibrant, bustling city, taking it all in. But just a few streets away from the main attractions, the scenery changes. The crowds thin out. Without any context or warning, you've driven into a high-crime area. The excitement instantly turns to dread. What was supposed to be a joyful family memory is now a terrifying, potentially dangerous situation. I am Mohau Mofokeng, co-founder of Skeep Technologies. We believe that feeling safe while navigating the world shouldn't rely on luck, it is a fundamental right. And that's why we built TravelHawk.",
+            "You've finally taken your family on that dream vacation. You're driving through a vibrant city, taking it all in. But suddenly... the scenery changes. The crowds thin. Without warning, you've driven into a high-crime area. Excitement turns to dread. A joyful memory is now a terrifying situation. I am Mohau Mofokeng, co-founder of Skeep Technologies. We believe feeling safe navigating the world shouldn't rely on luck—it's a fundamental right. That's why we built TravelHawk.",
 
-            "The challenge we face today is that safety information is incredibly reactive. You typically only find out an area is dangerous after an incident has occurred, or by relying on outdated word-of-mouth. Whether you are an international tourist visiting our beautiful country, or a local simply commuting to work, the threat of unpredictable crime, like smash-and-grabs or sudden unrest, is a constant, lingering anxiety. This anxiety restricts freedom, harms local tourism, and places a massive strain on our limited resources for emergency response. We can no longer afford to navigate our world blindfolded.",
+            "Today, safety information is reactive. You only find out an area is dangerous *after* an incident happens. Whether you're an international tourist or a local commuter, unpredictable crime creates constant anxiety. This restricts freedom, harms tourism, and strains our emergency resources. We can no longer afford to navigate our world blindfolded.",
 
-            "TravelHawk removes that blindfold. We provide real-time, hyper-local safety awareness directly in the palm of your hand. Our technology detects and visualizes threats, alerting users instantaneously. But we go beyond just showing you a map, we give you the tools to plan ahead. When planning your journey, TravelHawk evaluates your path against known high-risk zones and recent incidents, allowing you to establish a secure route before leaving. We are giving you the confidence and peace of mind to live your life freely. You focus on the journey; we focus on keeping you safe.",
+            "TravelHawk removes that blindfold. We provide real-time, hyper-local safety awareness right in your hand. Our tech detects and visualizes threats instantly. But beyond just a map, we give you tools to plan ahead. TravelHawk evaluates your path against known risks so you can establish a secure route *before* you leave. You focus on the journey; we focus on keeping you safe.",
 
-            "And the market is eagerly responding. Since launch, TravelHawk is live on both the Apple App Store and Google Play Store. We are already seeing strong, organic adoption from international tourists, especially from markets like Germany, who rely on us to safely navigate unfamiliar terrain. Beyond consumers, we are seeing immense traction in the B2B space, actively partnering with major players in the private security industry who recognize the critical value of our real-time intelligence.",
+            "The market is responding. TravelHawk is live on Apple and Google Play. We're seeing strong, organic adoption from international tourists—especially from Germany—relying on us in unfamiliar terrain. Beyond consumers, we have immense traction in the B2B space, actively partnering with major private security players who recognize the value of our real-time intelligence.",
 
-            "But consumer safety is just the beginning. Our roadmap is aggressively focused on B2B expansion across South Africa. We are currently rolling out a white-label enterprise solution, complete with custom partner dashboards and Role-Based Access Control. This allows corporate travel agencies, logistics companies, and private security firms to integrate TravelHawk's intelligence directly into their operations. Additionally, we are introducing a dedicated Panic Button to our ecosystem to ensure immediate, coordinated emergency response when it matters most.",
+            "But consumer safety is just the start. Our roadmap is aggressively focused on B2B expansion. We're rolling out a white-label enterprise solution with custom dashboards and Role-Based Access Control. This lets travel agencies, logistics, and security firms integrate TravelHawk directly into operations. We're also introducing a dedicated Panic Button for immediate, coordinated emergency response.",
 
-            "Financially, our model is designed for sustainable growth. Our B2C app establishes our brand presence, builds trust, and creates a highly engaged core user base. Meanwhile, our B2B SaaS model provides high-margin, recurring revenue. By charging corporate partners for white-labeled access, tailored intelligence feeds, and duty-of-care compliance solutions, we ensure we build a deeply profitable and resilient business.",
+            "Our financial model is built for sustainable growth. Our B2C app builds profound brand trust and an engaged core user base. Meanwhile, our B2B SaaS model provides high-margin, recurring revenue through white-labeled access, tailored intelligence feeds, and duty-of-care compliance. This ensures we build a resilient, deeply profitable business.",
 
-            "Our impact, however, goes far beyond the balance sheet. By equipping people with real-time awareness, we are proactively preventing crime and trauma. We are reviving local economies by making tourist destinations demonstrably safer, and most importantly, we are democratizing physical security for everyday citizens who simply want to get home to their families safely.",
+            "Our impact goes far beyond the balance sheet. By equipping people with real-time awareness, we proactively prevent crime and trauma. We revive local economies through demonstrably safer tourism. Most importantly, we democratize physical security for everyday citizens who just want to get home safely.",
 
-            "Executing this requires a unique blend of technical mastery and operational resilience. Between myself, Mohau, Byron, and our dedicated team, we possess the deep engineering expertise and the on-the-ground market understanding required to build, scale, and commercialize this technology across the continent and beyond.",
+            "Executing this requires a unique blend of technical mastery and operational resilience. Between myself, Byron, Tlotliso, and our team, we possess the deep engineering expertise and on-the-ground market understanding to scale this technology across the continent.",
 
-            "To fuel our ongoing expansion and deepen our infrastructure, we are seeking strategic enterprise partners and organizations looking to enhance their safety protocols. Join us at Skeep Technologies. Help us turn safety from a privilege into a standard right across South Africa. Thank you."
+            "To fuel our expansion, we are seeking strategic enterprise partners and organizations looking to enhance their safety protocols. Join Skeep Technologies. Help us turn safety from a privilege into a standard right across South Africa. Thank you."
         ];
 
         function updateDeck() {
